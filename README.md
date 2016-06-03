@@ -4,7 +4,7 @@ Not Redis, is Redius
 
 对radix的封装
 
-用例
+用例 main.go
 ```
 package main
 
@@ -24,9 +24,9 @@ func main() {
 
 	redius.InitClient()
 
-	redius.SET("rediu", "this is rediu test")
+	redius.SET("redis", "this is redius,that is redis")
 
-	fmt.Println(redius.GET("rediu"))
+	fmt.Println(redius.GET("redis"))
 
 }
 ```
