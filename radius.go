@@ -1,4 +1,4 @@
-package redius
+package radius
 
 import (
 	"github.com/mediocregopher/radix.v2/pool"
@@ -15,7 +15,7 @@ type Redius struct {
 }
 
 func (this *Redius) InitClient() {
-	log.Printf("%d rediu initializing from %s:%s", this.Poolsize, this.Network, this.Addr)
+	//log.Printf("%d rediu initializing from %s:%s", this.Poolsize, this.Network, this.Addr)
 
 	var err error
 	if "" == this.Password {
@@ -143,15 +143,26 @@ func (this *Redius) HMGET(key string, fields []string) (val []string, err error)
 	return
 }
 
-// redis command:
-// HDEL key field
-func (this *Redius) HDEL(key, field string) {
+func (this *Redius) HGETALL(key string) (val []string, err error) {
 	c, err := this._pool.Get()
 	if err != nil {
 		return
 	}
-	_ = c.Cmd("HDEL", key, field).Err
+	val, err = c.Cmd("HGETALL", key).List()
 	this._pool.Put(c)
+	return
+}
+
+// redis command:
+// HDEL key field
+func (this *Redius) HDEL(key, field string) error {
+	c, err := this._pool.Get()
+	if err != nil {
+		return err
+	}
+	err = c.Cmd("HDEL", key, field).Err
+	this._pool.Put(c)
+	return err
 }
 
 // redis command:
@@ -253,4 +264,14 @@ func (this *Redius) EXPIREAT(key string, timestamp int) {
 	}
 	_ = c.Cmd("EXPIREAT", key, timestamp).Err
 	this._pool.Put(c)
+}
+
+func (this *Redius) KEYS(key string) (val []string, err error) {
+	c, err := this._pool.Get()
+	if err != nil {
+		return nil, err
+	}
+	val, err = c.Cmd("KEYS", key).List()
+	this._pool.Put(c)
+	return
 }
