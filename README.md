@@ -2,9 +2,9 @@
 
 Not Redis, is Redius 
 
-对radix的封装
+pacakge radix, more convenient to use redis
 
-用例 main.go
+eg: main.go
 ```
 package main
 
