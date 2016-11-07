@@ -1,4 +1,4 @@
-package radius
+package redius
 
 import (
 	"github.com/mediocregopher/radix.v2/pool"
