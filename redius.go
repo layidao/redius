@@ -154,6 +154,16 @@ func (this *Redius) HGETALL(key string) (val []string, err error) {
 	return
 }
 
+func (this *Redius) HKEYS(key string) (val []string, err error) {
+	c, err := this._pool.Get()
+	if err != nil {
+		return
+	}
+	val, err = c.Cmd("HKEYS", key).List()
+	this._pool.Put(c)
+	return
+}
+
 // redis command:
 // HDEL key field
 func (this *Redius) HDEL(key, field string) error {
