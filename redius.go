@@ -88,6 +88,7 @@ func (this *Redius) MGET(keys []string) (val []string, err error) {
 	return
 }
 
+//
 // hset key field val
 func (this *Redius) HSET(key, field string, val string) error {
 	c, err := this._pool.Get()
@@ -252,6 +253,27 @@ func (this *Redius) ZREMRANGEBYSCORE(key string, min, max int) (err error) {
 
 	err = c.Cmd("ZREMRANGEBYSCORE", key, min, max).Err
 
+	this._pool.Put(c)
+	return err
+}
+
+// KEY 操作
+func (this *Redius) DEL(key string) (err error) {
+	c, err := this._pool.Get()
+	if err != nil {
+		return err
+	}
+	err = c.Cmd("DEL", key).Err
+	this._pool.Put(c)
+	return err
+}
+
+func (this *Redius) DELALL(keys []string) (err error) {
+	c, err := this._pool.Get()
+	if err != nil {
+		return err
+	}
+	err = c.Cmd("DEL", keys).Err
 	this._pool.Put(c)
 	return err
 }
