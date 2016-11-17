@@ -14,7 +14,7 @@ type Redius struct {
 	_pool    *pool.Pool
 }
 
-func (this *Redius) InitClient() {
+func (this *Redius) InitClient() error {
 	//log.Printf("%d rediu initializing from %s:%s", this.Poolsize, this.Network, this.Addr)
 
 	var err error
@@ -37,8 +37,9 @@ func (this *Redius) InitClient() {
 	}
 
 	if err != nil {
-		log.Println(err)
+		log.Println("Fatal:", err)
 	}
+	return err
 }
 
 // SET key
@@ -304,6 +305,26 @@ func (this *Redius) KEYS(key string) (val []string, err error) {
 		return nil, err
 	}
 	val, err = c.Cmd("KEYS", key).List()
+	this._pool.Put(c)
+	return
+}
+
+func (this *Redius) SCAN(cursor, pattern, count string) (val []string, err error) {
+	c, err := this._pool.Get()
+	if err != nil {
+		return nil, err
+	}
+	val, err = c.Cmd("SCAN", cursor, "MATCH", pattern, "COUNT", count).List()
+	this._pool.Put(c)
+	return
+}
+
+func (this *Redius) HSCAN(cursor, pattern, count string) (val []string, err error) {
+	c, err := this._pool.Get()
+	if err != nil {
+		return nil, err
+	}
+	val, err = c.Cmd("HSCAN", cursor, "MATCH", pattern, "COUNT", count).List()
 	this._pool.Put(c)
 	return
 }
